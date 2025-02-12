@@ -9,6 +9,7 @@
  */
 package org.eclipse.dirigible.tests;
 
+import org.eclipse.dirigible.commons.config.Configuration;
 import org.eclipse.dirigible.commons.config.DirigibleConfig;
 import org.eclipse.dirigible.tests.framework.Browser;
 import org.eclipse.dirigible.tests.framework.HtmlAttribute;
@@ -123,7 +124,15 @@ public class IDE {
 
     public Workbench openWorkbench() {
         openHomePage();
-        browser.clickOnElementByAttributeValue(HtmlElementType.LI, HtmlAttribute.TITLE, "Workbench");
+
+        // TODO REMOVE LINE 131 and 132 `if(Configuration.get("Old_Test").equals("yes"))`
+        // Add support for the left old tests because they use the same testing framework but have different elements
+
+        if(Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes"))
+            browser.clickOnElementByAttributeValue(HtmlElementType.ANCHOR, HtmlAttribute.TITLE, "Workbench");
+        else
+            browser.clickOnElementByAttributeValue(HtmlElementType.LI, HtmlAttribute.TITLE, "Workbench");
+
         return new Workbench(browser);
     }
 

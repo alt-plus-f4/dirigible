@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.fail;
+import org.eclipse.dirigible.commons.config.Configuration;
 
 @Lazy
 @Component
@@ -43,11 +44,10 @@ class BrowserImpl implements Browser {
     private static final String PATH_SEPARATOR = "/";
 
     static {
-        Configuration.timeout = SELENIDE_TIMEOUT_MILLIS;
-        Configuration.browser = BROWSER;
-        Configuration.browserCapabilities = new ChromeOptions().addArguments("--remote-allow-origins=*");
+        com.codeborne.selenide.Configuration.timeout = SELENIDE_TIMEOUT_MILLIS;
+        com.codeborne.selenide.Configuration.browser = BROWSER;
+        com.codeborne.selenide.Configuration.browserCapabilities = new ChromeOptions().addArguments("--remote-allow-origins=*");
     }
-
     private final String protocol;
     private final int port;
     private final String host;
@@ -159,18 +159,52 @@ class BrowserImpl implements Browser {
     }
 
     private boolean tryToHandleElementInAllFrames(SelenideElement element, Consumer<SelenideElement> elementHandler) {
-        Selenide.switchTo().defaultContent();
-        LOGGER.info("Checking element [{}] in the default frame..", element);
 
-        if (elementExists(element, 3000L)) {
-            LOGGER.info("Element [{}] was FOUND in the default frame.", element);
-            elementHandler.accept(element);
-            return true;
+        // TODO REMOVE IF ELSE BLOCKS AND USE ONLY THE ELSE BLOCK FOR NEW TESTS
+
+        if(Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes")) {
+            Selenide.switchTo()
+                    .defaultContent();
+            LOGGER.info("Checking element [{}] in the default frame...", element);
+            if (elementExists(element, 600L)) {
+                LOGGER.info("Element [{}] was FOUND in the default frame.", element);
+                elementHandler.accept(element);
+                return true;
+            }
+            ElementsCollection iframes = getElements(HtmlElementType.IFRAME);
+            LOGGER.info("Found [{}] iframes", iframes.size());
+
+            for (SelenideElement iframe : iframes) {
+                Selenide.switchTo()
+                        .frame(iframe);
+
+                LOGGER.info("Checking element [{}] in iframe [{}]...", element, iframe);
+                if (elementExists(element, 600L)) {
+                    LOGGER.info("Element [{}] was FOUND in frame [{}].", element, iframe);
+                    elementHandler.accept(element);
+                    return true;
+                }
+
+                // without this, the frame cannot be switched in the next iteration
+                Selenide.switchTo()
+                        .defaultContent();
+            }
+            return false;
         }
+        else {
+            Selenide.switchTo().defaultContent();
+            LOGGER.info("Checking element [{}] in the default frame..", element);
 
-        // Track visited iframes to avoid infinite loops
-        Set<String> visitedIframes = new HashSet<>();
-        return checkFramesRecursively(getElements(HtmlElementType.IFRAME), element, elementHandler, 0, visitedIframes);
+            if (elementExists(element, 3000L)) {
+                LOGGER.info("Element [{}] was FOUND in the default frame.", element);
+                elementHandler.accept(element);
+                return true;
+            }
+
+            // Track visited iframes to avoid infinite loops
+            Set<String> visitedIframes = new HashSet<>();
+            return checkFramesRecursively(getElements(HtmlElementType.IFRAME), element, elementHandler, 0, visitedIframes);
+        }
     }
 
     private boolean checkFramesRecursively(ElementsCollection iframes, SelenideElement element, Consumer<SelenideElement> elementHandler, int depth, Set<String> visitedIframes) {

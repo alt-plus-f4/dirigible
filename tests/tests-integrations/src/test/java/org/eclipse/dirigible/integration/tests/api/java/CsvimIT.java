@@ -44,6 +44,7 @@ public class CsvimIT extends UserInterfaceIntegrationTest {
 
     static {
         Configuration.set("DIRIGIBLE_HOME_URL", "services/web/ide/");
+        Configuration.set("Old_Test", "yes");
     }
 
     @Autowired

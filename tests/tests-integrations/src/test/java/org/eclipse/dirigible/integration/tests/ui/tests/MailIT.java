@@ -54,6 +54,8 @@ class MailIT extends UserInterfaceIntegrationTest {
         Configuration.set("DIRIGIBLE_MAIL_SMTP_HOST", "localhost");
         Configuration.set("DIRIGIBLE_MAIL_SMTP_PORT", Integer.toString(PORT));
         Configuration.set("DIRIGIBLE_MAIL_SMTP_AUTH", "true");
+        Configuration.set("Old_Test", "yes");
+
     }
 
     @Autowired

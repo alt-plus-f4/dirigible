@@ -47,7 +47,7 @@ public abstract class IntegrationTest {
     }
 
     @AfterAll
-    public static final void reloadConfigurations() {
+    public static void reloadConfigurations() {
         Configuration.reloadConfigurations();
     }
 

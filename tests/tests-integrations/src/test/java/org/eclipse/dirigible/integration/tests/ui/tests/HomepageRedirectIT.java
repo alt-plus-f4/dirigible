@@ -9,10 +9,16 @@
  */
 package org.eclipse.dirigible.integration.tests.ui.tests;
 
+import org.eclipse.dirigible.commons.config.Configuration;
 import org.eclipse.dirigible.tests.framework.HtmlElementType;
 import org.junit.jupiter.api.Test;
 
 class HomepageRedirectIT extends UserInterfaceIntegrationTest {
+
+    static {
+        Configuration.set("DIRIGIBLE_HOME_URL", "services/web/ide/");
+        Configuration.set("Old_Test", "yes");
+    }
 
     @Test
     void testOpenHomepage() {

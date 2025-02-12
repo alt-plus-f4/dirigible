@@ -15,12 +15,21 @@ import org.eclipse.dirigible.tests.framework.HtmlElementType;
 import org.eclipse.dirigible.tests.util.SleepUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.eclipse.dirigible.commons.config.Configuration;
 
 @Lazy
 @Component
 public class Workbench {
+    public static final String PROJECTS_VIEW_ID;
 
-    public static final String PROJECTS_VIEW_ID = "pvtree";
+    // TODO REMOVE THIS STATIC BLOCK
+    // TODO AND USE ONLY "pvtree"
+
+    static {
+        if (Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes"))PROJECTS_VIEW_ID = "dgProjects";
+        else PROJECTS_VIEW_ID = "pvtree";
+    }
+
     public static final String PROJECT_NAME_INPUT_ID = "pgfi1";
     private static final String PROJECTS_CONTEXT_MENU_NEW_PROJECT = "New Project";
     private static final String CREATE_PROJECT_BUTTON_TEXT = "Create";
