@@ -44,6 +44,10 @@ class MailIT extends UserInterfaceIntegrationTest {
     }
 
     static {
+        Configuration.set("DIRIGIBLE_HOME_URL", "services/web/ide/");
+    }
+
+    static {
         Configuration.set("DIRIGIBLE_MAIL_USERNAME", USER);
         Configuration.set("DIRIGIBLE_MAIL_PASSWORD", PASSWORD);
         Configuration.set("DIRIGIBLE_MAIL_TRANSPORT_PROTOCOL", "smtp");
