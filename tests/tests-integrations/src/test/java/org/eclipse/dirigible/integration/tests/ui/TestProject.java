@@ -20,6 +20,7 @@ import org.eclipse.dirigible.tests.framework.HtmlElementType;
 import org.eclipse.dirigible.tests.logging.LogsAsserter;
 import org.eclipse.dirigible.tests.restassured.RestAssuredExecutor;
 import org.eclipse.dirigible.tests.util.ProjectUtil;
+import org.eclipse.dirigible.tests.util.SleepUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -76,13 +77,13 @@ public class TestProject {
 
     public void publish() {
         projectUtil.copyResourceProjectToDefaultUserWorkspace(PROJECT_RESOURCES_PATH);
-
         Workbench workbench = ide.openWorkbench();
+        SleepUtil.sleepMillis(5000);
         workbench.expandProject(PROJECT_ROOT_FOLDER);
+        SleepUtil.sleepMillis(2000);
         workbench.openFile(EDM_FILE_NAME);
-
+        SleepUtil.sleepMillis(2000);
         edmView.regenerate();
-
         workbench.publishAll();
     }
 

@@ -13,7 +13,7 @@ public enum HtmlElementType {
     BUTTON("button"), //
     INPUT("input"), //
     ANCHOR("a"), //
-    HEADER1("h1"), //
+    HEADER1("h1"),
     HEADER2("h2"), //
     HEADER3("h3"), //
     HEADER4("h4"), //
@@ -23,7 +23,9 @@ public enum HtmlElementType {
     IFRAME("iframe"), //
     SPAN("span"), //
     DIV("div"), //
-    FD_MESSAGE_PAGE_TITLE("bk-message-page-title");
+    LI("li"),
+    FD_MESSAGE_PAGE_TITLE("bk-message-page-title"),
+    STATUS_MESSAGE(".statusbar-message .statusbar--text"),;
 
     private final String type;
 

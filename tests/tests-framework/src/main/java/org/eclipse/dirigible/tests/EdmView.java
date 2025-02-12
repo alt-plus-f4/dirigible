@@ -12,6 +12,7 @@ package org.eclipse.dirigible.tests;
 import org.eclipse.dirigible.tests.framework.Browser;
 import org.eclipse.dirigible.tests.framework.HtmlAttribute;
 import org.eclipse.dirigible.tests.framework.HtmlElementType;
+import org.eclipse.dirigible.tests.util.SleepUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ public class EdmView {
 
     public void regenerate() {
         browser.clickOnElementByAttributePattern(HtmlElementType.BUTTON, HtmlAttribute.TITLE, "Regenerate");
+        SleepUtil.sleepMillis(5000);
         browser.assertElementExistsByTypeAndTextPattern(HtmlElementType.SPAN, "Generated from model");
     }
 }

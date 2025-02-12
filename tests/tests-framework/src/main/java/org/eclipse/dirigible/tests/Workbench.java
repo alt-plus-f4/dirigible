@@ -12,6 +12,7 @@ package org.eclipse.dirigible.tests;
 import org.eclipse.dirigible.tests.framework.Browser;
 import org.eclipse.dirigible.tests.framework.HtmlAttribute;
 import org.eclipse.dirigible.tests.framework.HtmlElementType;
+import org.eclipse.dirigible.tests.util.SleepUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Workbench {
 
-    public static final String PROJECTS_VIEW_ID = "dgProjects";
+    public static final String PROJECTS_VIEW_ID = "pvtree";
     public static final String PROJECT_NAME_INPUT_ID = "pgfi1";
     private static final String PROJECTS_CONTEXT_MENU_NEW_PROJECT = "New Project";
     private static final String CREATE_PROJECT_BUTTON_TEXT = "Create";
@@ -39,6 +40,7 @@ public class Workbench {
 
     public void publishAll() {
         clickPublishAll();
+        SleepUtil.sleepMillis(3000);
         browser.assertElementExistsByTypeAndTextPattern(HtmlElementType.SPAN, "Published all projects in");
     }
 

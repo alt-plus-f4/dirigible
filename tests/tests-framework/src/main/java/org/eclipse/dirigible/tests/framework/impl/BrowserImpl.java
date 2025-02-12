@@ -24,6 +24,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -157,31 +159,76 @@ class BrowserImpl implements Browser {
     }
 
     private boolean tryToHandleElementInAllFrames(SelenideElement element, Consumer<SelenideElement> elementHandler) {
-        Selenide.switchTo()
-                .defaultContent();
-        LOGGER.info("Checking element [{}] in the default frame...", element);
-        if (elementExists(element, 600L)) {
+        Selenide.switchTo().defaultContent();
+        LOGGER.info("Checking element [{}] in the default frame..", element);
+
+        if (elementExists(element, 3000L)) {
             LOGGER.info("Element [{}] was FOUND in the default frame.", element);
             elementHandler.accept(element);
             return true;
         }
-        ElementsCollection iframes = getElements(HtmlElementType.IFRAME);
-        LOGGER.info("Found [{}] iframes", iframes.size());
+
+        // Track visited iframes to avoid infinite loops
+        Set<String> visitedIframes = new HashSet<>();
+        return checkFramesRecursively(getElements(HtmlElementType.IFRAME), element, elementHandler, 0, visitedIframes);
+    }
+
+    private boolean checkFramesRecursively(ElementsCollection iframes, SelenideElement element, Consumer<SelenideElement> elementHandler, int depth, Set<String> visitedIframes) {
+        LOGGER.info("\n\nFound [{}] Nested Iframes at Depth [{}]:\n", iframes.size(), depth);
 
         for (SelenideElement iframe : iframes) {
-            Selenide.switchTo()
-                    .frame(iframe);
+            String iframeTitle = "No title";
+            try {
+                // Skip hidden or non-existent iframes
+                if (!iframe.exists()) {
+                    LOGGER.warn("Skipping non-existent iframe [{}] at depth [{}]", iframe, depth);
+                    continue;
+                }
 
-            LOGGER.info("Checking element [{}] in iframe [{}]...", element, iframe);
-            if (elementExists(element, 600L)) {
-                LOGGER.info("Element [{}] was FOUND in frame [{}].", element, iframe);
-                elementHandler.accept(element);
-                return true;
+                // Get the iframe's unique identifier (e.g., title or other attribute)
+                iframeTitle = iframe.getAttribute("title");
+                String iframeId = iframeTitle != null ? iframeTitle : iframe.getAttribute("id");
+
+                // Skip if this iframe has already been visited
+                if (visitedIframes.contains(iframeId)) {
+                    LOGGER.info("Skipping already visited iframe [{}] at depth [{}]", iframeTitle, depth);
+                    continue;
+                }
+
+                // Mark this iframe as visited
+                visitedIframes.add(iframeId);
+
+                LOGGER.info("Checking iframe [{}] at depth [{}]", iframeTitle, depth);
+
+                // Switch to the iframe
+                Selenide.switchTo().frame(iframe);
+                LOGGER.info("Switched to iframe [{}], checking for element...", iframeTitle);
+
+                // Check if the element exists in the current iframe
+                if (elementExists(element, 3000L)) {
+                    LOGGER.info("Element [{}] was FOUND in iframe [{}].", element, iframeTitle);
+                    elementHandler.accept(element);
+                    return true;
+                }
+
+                // Recursively check nested iframes
+                ElementsCollection nestedIframes = getElements(HtmlElementType.IFRAME);
+                if (!nestedIframes.isEmpty()) {
+                    if (checkFramesRecursively(nestedIframes, element, elementHandler, depth + 1, visitedIframes)) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to switch to iframe [{}] at depth [{}]: {}", iframeTitle, depth, e.getMessage());
+            } finally {
+                // Always switch back to the parent frame
+                try {
+                    Selenide.switchTo().parentFrame();
+                    LOGGER.info("Switched back to parent frame from iframe [{}] at depth [{}]", iframeTitle, depth);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to switch back to parent frame from iframe [{}] at depth [{}]: {}", iframeTitle, depth, e.getMessage());
+                }
             }
-
-            // without this, the frame cannot be switched in the next iteration
-            Selenide.switchTo()
-                    .defaultContent();
         }
         return false;
     }
@@ -194,9 +241,10 @@ class BrowserImpl implements Browser {
                 LOGGER.info("Element [{}] EXISTS in the current frame.", element);
                 return true;
             }
-            LOGGER.info("Element [{}] does NOT exist in the current frame.", element);
-            SleepUtil.sleepMillis(200);
+            LOGGER.info("Searching for element [{}]..", element);
+            SleepUtil.sleepMillis(1000);
         } while (System.currentTimeMillis() < until);
+        LOGGER.info("Element [{}] DOES NOT EXIST in the current frame.", element);
         return false;
     }
 
