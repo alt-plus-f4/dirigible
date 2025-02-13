@@ -167,7 +167,7 @@ class BrowserImpl implements Browser {
             Selenide.switchTo()
                     .defaultContent();
             LOGGER.info("Checking element [{}] in the default frame...", element);
-            if (elementExists(element, 600L)) {
+            if (elementExists(element, 6000L)) {
                 LOGGER.info("Element [{}] was FOUND in the default frame.", element);
                 elementHandler.accept(element);
                 return true;
@@ -180,7 +180,7 @@ class BrowserImpl implements Browser {
                         .frame(iframe);
 
                 LOGGER.info("Checking element [{}] in iframe [{}]...", element, iframe);
-                if (elementExists(element, 600L)) {
+                if (elementExists(element, 6000L)) {
                     LOGGER.info("Element [{}] was FOUND in frame [{}].", element, iframe);
                     elementHandler.accept(element);
                     return true;
@@ -196,7 +196,7 @@ class BrowserImpl implements Browser {
                     .defaultContent();
             LOGGER.info("Checking element [{}] in the default frame..", element);
 
-            if (elementExists(element, 600L)) {
+            if (elementExists(element, 6000L)) {
                 LOGGER.info("Element [{}] was FOUND in the default frame.", element);
                 elementHandler.accept(element);
                 return true;
@@ -242,7 +242,7 @@ class BrowserImpl implements Browser {
                 LOGGER.info("Switched to iframe [{}], checking for element...", iframeTitle);
 
                 // Check if the element exists in the current iframe
-                if (elementExists(element, 600L)) {
+                if (elementExists(element, 3000L)) {
                     LOGGER.info("Element [{}] was FOUND in iframe [{}].", element, iframeTitle);
                     elementHandler.accept(element);
                     return true;
@@ -281,7 +281,7 @@ class BrowserImpl implements Browser {
                 return true;
             }
             LOGGER.info("Searching for element [{}]..", element);
-            SleepUtil.sleepMillis(200);
+            SleepUtil.sleepMillis(1000);
         } while (System.currentTimeMillis() < until);
         LOGGER.info("Element [{}] DOES NOT EXIST in the current frame.", element);
         return false;
