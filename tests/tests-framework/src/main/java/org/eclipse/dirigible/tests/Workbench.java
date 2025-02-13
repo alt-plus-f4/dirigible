@@ -26,8 +26,11 @@ public class Workbench {
     // TODO AND USE ONLY "pvtree"
 
     static {
-        if (Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes"))PROJECTS_VIEW_ID = "dgProjects";
-        else PROJECTS_VIEW_ID = "pvtree";
+        if (Configuration.get("Old_Test") != null && Configuration.get("Old_Test")
+                                                                  .equals("yes"))
+            PROJECTS_VIEW_ID = "dgProjects";
+        else
+            PROJECTS_VIEW_ID = "pvtree";
     }
 
     public static final String PROJECT_NAME_INPUT_ID = "pgfi1";

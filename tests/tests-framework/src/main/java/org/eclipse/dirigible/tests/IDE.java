@@ -126,9 +126,11 @@ public class IDE {
         openHomePage();
 
         // TODO REMOVE LINE 131 and 132 `if(Configuration.get("Old_Test").equals("yes"))`
-        // Add support for the left old tests because they use the same testing framework but have different elements
+        // Add support for the left old tests because they use the same testing framework but have different
+        // elements
 
-        if(Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes"))
+        if (Configuration.get("Old_Test") != null && Configuration.get("Old_Test")
+                                                                  .equals("yes"))
             browser.clickOnElementByAttributeValue(HtmlElementType.ANCHOR, HtmlAttribute.TITLE, "Workbench");
         else
             browser.clickOnElementByAttributeValue(HtmlElementType.LI, HtmlAttribute.TITLE, "Workbench");

@@ -136,7 +136,7 @@ class BrowserImpl implements Browser {
             do {
                 boolean handled = tryToHandleElementInAllFrames(element, elementHandler);
                 if (handled) {
-                    LOGGER.info("Element [{}] was NOT found. Will try again.", element);
+                    LOGGER.info("Element [{}] was found", element);
                     return;
                 }
             } while (System.currentTimeMillis() < maxWaitTime);
@@ -162,7 +162,8 @@ class BrowserImpl implements Browser {
 
         // TODO REMOVE IF ELSE BLOCKS AND USE ONLY THE ELSE BLOCK FOR NEW TESTS
 
-        if(Configuration.get("Old_Test") != null && Configuration.get("Old_Test").equals("yes")) {
+        if (Configuration.get("Old_Test") != null && Configuration.get("Old_Test")
+                                                                  .equals("yes")) {
             Selenide.switchTo()
                     .defaultContent();
             LOGGER.info("Checking element [{}] in the default frame...", element);
@@ -190,12 +191,12 @@ class BrowserImpl implements Browser {
                         .defaultContent();
             }
             return false;
-        }
-        else {
-            Selenide.switchTo().defaultContent();
+        } else {
+            Selenide.switchTo()
+                    .defaultContent();
             LOGGER.info("Checking element [{}] in the default frame..", element);
 
-            if (elementExists(element, 3000L)) {
+            if (elementExists(element, 600L)) {
                 LOGGER.info("Element [{}] was FOUND in the default frame.", element);
                 elementHandler.accept(element);
                 return true;
@@ -207,7 +208,8 @@ class BrowserImpl implements Browser {
         }
     }
 
-    private boolean checkFramesRecursively(ElementsCollection iframes, SelenideElement element, Consumer<SelenideElement> elementHandler, int depth, Set<String> visitedIframes) {
+    private boolean checkFramesRecursively(ElementsCollection iframes, SelenideElement element, Consumer<SelenideElement> elementHandler,
+            int depth, Set<String> visitedIframes) {
         LOGGER.info("\n\nFound [{}] Nested Iframes at Depth [{}]:\n", iframes.size(), depth);
 
         for (SelenideElement iframe : iframes) {
@@ -235,11 +237,12 @@ class BrowserImpl implements Browser {
                 LOGGER.info("Checking iframe [{}] at depth [{}]", iframeTitle, depth);
 
                 // Switch to the iframe
-                Selenide.switchTo().frame(iframe);
+                Selenide.switchTo()
+                        .frame(iframe);
                 LOGGER.info("Switched to iframe [{}], checking for element...", iframeTitle);
 
                 // Check if the element exists in the current iframe
-                if (elementExists(element, 3000L)) {
+                if (elementExists(element, 600L)) {
                     LOGGER.info("Element [{}] was FOUND in iframe [{}].", element, iframeTitle);
                     elementHandler.accept(element);
                     return true;
@@ -257,10 +260,12 @@ class BrowserImpl implements Browser {
             } finally {
                 // Always switch back to the parent frame
                 try {
-                    Selenide.switchTo().parentFrame();
+                    Selenide.switchTo()
+                            .parentFrame();
                     LOGGER.info("Switched back to parent frame from iframe [{}] at depth [{}]", iframeTitle, depth);
                 } catch (Exception e) {
-                    LOGGER.error("Failed to switch back to parent frame from iframe [{}] at depth [{}]: {}", iframeTitle, depth, e.getMessage());
+                    LOGGER.error("Failed to switch back to parent frame from iframe [{}] at depth [{}]: {}", iframeTitle, depth,
+                            e.getMessage());
                 }
             }
         }
@@ -276,7 +281,7 @@ class BrowserImpl implements Browser {
                 return true;
             }
             LOGGER.info("Searching for element [{}]..", element);
-            SleepUtil.sleepMillis(1000);
+            SleepUtil.sleepMillis(200);
         } while (System.currentTimeMillis() < until);
         LOGGER.info("Element [{}] DOES NOT EXIST in the current frame.", element);
         return false;

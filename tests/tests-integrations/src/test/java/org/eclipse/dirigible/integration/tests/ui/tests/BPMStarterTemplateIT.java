@@ -86,8 +86,8 @@ class BPMStarterTemplateIT extends UserInterfaceIntegrationTest {
         browser.clickOnElementContainingText(HtmlElementType.BUTTON, TRIGGER_BUTTON_TEXT);
 
         // TODO remove this and figure logs out
-//        await().atMost(30, TimeUnit.SECONDS)
-//               .until(() -> consoleLogAsserter.containsMessage(EXPECTED_TASK_LOGGED_MESSAGE, Level.INFO));
+        // await().atMost(30, TimeUnit.SECONDS)
+        // .until(() -> consoleLogAsserter.containsMessage(EXPECTED_TASK_LOGGED_MESSAGE, Level.INFO));
 
         assert true;
     }
